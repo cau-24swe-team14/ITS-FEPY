@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox
+
+import page.api as api
 import page.projectList as projectlist
+
 
 # 회원 가입
 def signup(id, password) :
     # 서버와 연결하여 회원가입 처리
-    return False
+    return api.signup(id, password)
 
 # 회원 가입 성공하면 프로젝트 창으로 이동
 def register(view, entry_username, entry_password, entry_confirm_password):

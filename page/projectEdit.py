@@ -47,7 +47,7 @@ def projectEdit(view, id) :
     global title_edit
     global description_edit
     
-    new_user = []
+    new_user = {}
     title_edit = False
     description_edit = False
 

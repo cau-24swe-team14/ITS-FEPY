@@ -3,10 +3,11 @@ from tkinter import messagebox
 
 import page.projectList as projectlist
 import page.signup as signup
+import page.api as api
 
 # 서버와 연결해서 로그인 할 수 있도록
 def loginCheck(id, password) :
-    return True
+    return api.loginCheck(id, password)
 
 # 로그인 확인
 def login(view, entry_username, entry_password):
@@ -14,7 +15,7 @@ def login(view, entry_username, entry_password):
     password = entry_password.get()
 
     # 서버에서 확인
-    if loginCheck:  # Example credentials
+    if loginCheck(username, password):  # Example credentials
         projectlist.projectlist(view)
     else:
         messagebox.showerror("Error", "Invalid username or password")
