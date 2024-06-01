@@ -4,7 +4,7 @@ import numpy as np
 
 import page.projectCraete as create
 import page.projectEdit as edit
-import page.projectEdit as edit
+import page.api as api
 
 # 드롭아웃(필터링)
 statuses = ['any', 'Not Started', 'In Progress', 'Done']
@@ -20,23 +20,23 @@ page_size = 10
 isAdmin = False
 
 # projectlist 페이지를 호출하기 위해 사용
-def projectlist(view) :
+def projectlist(view, session) :
     global isAdmin
     global projectsFilter
     global projectsView
 
-    isAdmin = getProjectData()
+    isAdmin = getProjectData(session)
     projectsFilter = projects
     projectsView = projects
     change_page(view, 1)
 
 # GET
 # 서버에서 프로젝트 리스트 가져옴
-def getProjectData() :
+def getProjectData(session) :
     # 서버에서 json 가져오도록
+    api.getProjectData(session)
     global  projects
     global max_page
-
     projects = [{"status": "In Progress", "title" : "project1", "id" : 1}, 
                 {"status": "In Progress", "title" : "project1", "id" : 2},
                 {"status": "Completed", "title" : "project1", "id" : 2}, 

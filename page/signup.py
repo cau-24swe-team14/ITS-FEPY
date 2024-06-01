@@ -6,26 +6,26 @@ import page.projectList as projectlist
 
 
 # 회원 가입
-def signup(id, password) :
+def signup(id, password, session) :
     # 서버와 연결하여 회원가입 처리
-    return api.signup(id, password)
+    return api.signup(id, password, session)
 
 # 회원 가입 성공하면 프로젝트 창으로 이동
-def register(view, entry_username, entry_password, entry_confirm_password):
+def register(view, entry_username, entry_password, entry_confirm_password, session):
     username = entry_username.get()
     password = entry_password.get()
     confirm_password = entry_confirm_password.get()
     if password == confirm_password:
-        if(signup(username, password)) :
+        if(signup(username, password, session)) :
             messagebox.showinfo("Registration", "Registration Successful")
-            projectlist.projectlist(view)
+            projectlist.projectlist(view, session)
         else :
-            messagebox.showinfo("Registration", "Fail to signup")
+            messagebox.showinfo("Registration", "회원가입 실패")
     else:
-        messagebox.showerror("Error", "Passwords do not match")
+        messagebox.showerror("Error", "패스워드 확인이 일치하지 않음")
 
 # 회원가입창 구성
-def signupView(view):
+def signupView(view, session):
     for widget in view.winfo_children():
         widget.destroy()
 
@@ -55,6 +55,6 @@ def signupView(view):
     entry_confirm_password.grid(row=2, column=1, padx=5, pady=10)
 
     # Create and place the buttons
-    button_register = tk.Button(view, text="회원가입", font=("Arial", 14), command=lambda :register(view, entry_username, entry_password, entry_confirm_password))
+    button_register = tk.Button(view, text="회원가입", font=("Arial", 14), command=lambda :register(view, entry_username, entry_password, entry_confirm_password, session))
     button_register.grid(row=3, column=0, columnspan=2, pady=20)
 
