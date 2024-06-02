@@ -1,11 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+
 import page.projectList as projectlist
+import page.login as login
+import page.api as api
 
 new_user = {}
 user_table = ""
 roles = ["PL", "DEV", "TESTER"]
+role_key = {"PL" : 0, "DEV" : 1, "TESTER" : 2}
 project_id = 0
 
 project_title = ""
@@ -13,6 +17,7 @@ title_edit = False # 기존 값과 수정되었는지 여부
 project_description = ""
 description_edit = False 
 origin_user = []
+session = ""
 
 # get
 def project_data(id) :
@@ -20,33 +25,46 @@ def project_data(id) :
     global project_description
     global origin_user
 
-    project_title = "title"
-    project_description = "context"
-    origin_user = [{"name" : "PL1", "role":"PL"}, {"name" : "PL2", "role":"PL"}, 
-                   {"name" : "Dev1", "role":"Dev"}, {"name" : "Dev2", "role":"Dev"}]
+    state, data = api.project_data(id, session)
 
-# post
+    if(state) :
+        project_title = data["title"]
+        project_description = data["description"]
+        origin_user = data["member"]
+    else : 
+        messagebox.showwarning("server Error", "프로젝트 데이터를 불러오는데 실패하였습니다.")
+
+# patch
 def edit_project(view) : 
-    users = new_user.values()
-    
+    users = list(new_user.values())
+    edit = {}
+
     if(title_edit) : 
-        print("title edit")
         if not project_title:
-            messagebox.showwarning("Input Error", "Project name is required.")
+            messagebox.showwarning("Input Error", "프로젝트 이름을 입력하세요.")
             return
-    if(description_edit) : print("description edit")
-    if(len(users)>0) : print(users)
+        edit ["title"] = project_title
+    if(description_edit) : edit["description"] = project_description
+    if(len(users)>0) : edit["member"] = users
     # 수정된 것 서버에 적용
 
-    projectlist.projectlist(view)
+    print(edit)
+    if(title_edit or description_edit or len(users)>0) :
+        if(api.edit_project(edit, project_id, session)) :
+            messagebox.showwarning("project edit", "프로젝트가 정상적으로 수정되었습니다.")
+        else :
+            messagebox.showwarning("project edit", "프로젝트 수정에 문제가 발생하였습니다.")
+    projectlist.projectlist(view, session)
     
 # 프로젝트 수정 페이지 호출
-def projectEdit(view, id) :
+def projectEdit(view, id, session_get) :
     global project_id
     global new_user
     global title_edit
     global description_edit
+    global session
     
+    session = session_get
     new_user = {}
     title_edit = False
     description_edit = False
@@ -56,17 +74,31 @@ def projectEdit(view, id) :
     project_data(id)
     projectEditView(view)
 
+# Get
+def check_user(username) :
+    return api.check_user(username, session)
 
 def add_user(username_entry, role_combobox):
     username = username_entry.get()
     role = role_combobox.get()
     if username and role:
+        for user in origin_user :
+            if(user["username"] == username) : 
+                messagebox.showerror("Error", "이미 프로젝트에 등록된 유저입니다")
+                return 
+        for user in new_user.values() :
+            if(user["username"] == username) : 
+                messagebox.showerror("Error", "이미 프로젝트에 등록된 유저입니다")
+                return
         # 새로 입력된 유저 정보 저장
-        user_id = user_table.insert('', tk.END, values=(username, role))
-        new_user[user_id] = {'user_id' : username, 'role' : role}
-        add_delete_button(user_id)
-        username_entry.delete(0, tk.END)
-        role_combobox.set('')
+        if(check_user(username)) :
+            user_id = user_table.insert('', tk.END, values=(username, role))
+            new_user[user_id] = {'username' : username, 'role' : role_key[role]}
+            add_delete_button(user_id)
+            username_entry.delete(0, tk.END)
+            role_combobox.set('')
+        else :
+            messagebox.showerror("Error", "존재하지 않는 유저")
 
 # 제목이 변경 되었음을 감지
 def change_title(var) :
@@ -74,7 +106,6 @@ def change_title(var) :
     global project_title
     project_title = var.get()
     title_edit = True
-    print(project_title)
 
 # 설명이 변경 되었음을 감지
 def change_description(description):
@@ -86,7 +117,6 @@ def change_description(description):
         description_edit = True
         
         description.edit_modified(False)
-        print(project_description)
 
 # 새로 추가된 유저 중에서 삭제
 def delete_user(event):
@@ -105,6 +135,14 @@ def add_delete_button(user_id):
     # 테이블의 마지막 열에 삭제 버튼 추가
     user_table.item(user_id, values=(user_table.item(user_id, 'values')[0], user_table.item(user_id, 'values')[1], 'Delete'), tags=user_id)
 
+def back(view) :
+    projectlist.projectlist(view, session)
+
+# 로그아웃    
+def logout(view) :
+    api.logout(session)
+    login.loginView(view, session)
+
 def projectEditView(view) :
     global user_table
 
@@ -116,6 +154,14 @@ def projectEditView(view) :
     # 헤더 섹션
     header_frame = ttk.Frame(view)
     header_frame.grid(row=0, column=0, columnspan=3, sticky='ew')
+
+    # 뒤로가기 버튼
+    back_button = tk.Button(view, text="back", command=lambda: back(view))
+    back_button.grid(row=0, column=1, padx=10, pady=5, sticky="e")
+
+    # 로그아웃 버튼
+    logout_button = tk.Button(view, text="logout", command=lambda: logout(view))
+    logout_button.grid(row=0, column=2, padx=10, pady=5, sticky="e")
 
     # 메인 섹션
     main_frame = ttk.Frame(view)
@@ -178,7 +224,7 @@ def projectEditView(view) :
 
     # Sample data
     for user in origin_user:
-        user_table.insert('', tk.END, values=(user["name"], user["role"], ""))  # 기본 데이터에는 삭제 버튼을 추가하지 않음
+        user_table.insert('', tk.END, values=(user["username"], roles[user["role"]], ""))  # 기본 데이터에는 삭제 버튼을 추가하지 않음
     user_table.bind('<Button-1>', lambda event: delete_user(event))
 
     # Grid configuration
