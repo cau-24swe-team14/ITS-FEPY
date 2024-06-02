@@ -166,7 +166,7 @@ def issueDetail(view, get_projectId, get_issueId, get_session):
     tk.Label(status_box, text="Status: ").grid(row=1, column=0, padx=3, pady=5, sticky="w")
     if((data["accountRole"]==0 and (data["status"]==0 or data["status"]==3))
        or (data["assignee"]==api.username and (data["status"]==1 or data["status"]==5))
-       or (data["accountRole"]==2 and (data["status"]==2 or data["status"]==4))) :
+       or (data["accountRole"]==2 and data["status"]==2) or (data["status"]==4 and data["manager"]==api.username)) :
         status_combobox = ttk.Combobox(status_box, values=CurStatus[data["status"]], state="readonly", width=10)
         status_combobox.set(status)
         status_combobox.grid(row=1, column=1, padx=20, pady=5, sticky="w")

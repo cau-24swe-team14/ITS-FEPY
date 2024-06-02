@@ -1,6 +1,6 @@
 import requests as req
 
-url = "http://127.0.0.1:8080/"
+url = "http://13.125.149.255:8080/"
 username = ""
 
 # 회원 가입
@@ -133,7 +133,7 @@ def getIssue(projectId, issueId, session) :
             data = res.json()
             return data
         else:
-            return False, {}
+            return {}
     except req.exceptions.RequestException as e:
         print(f'An error occurred: {e}')
         return False
