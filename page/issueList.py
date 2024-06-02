@@ -5,6 +5,7 @@ import numpy as np
 import page.issueCreate as create
 import page.projectList as projectlist
 import page.issueDetail as issue
+import page.issueStatic as static
 import page.login as login
 import page.api as api
 
@@ -86,7 +87,11 @@ def create_issue(view) :
 # 이슈 페이지로 이동
 def issueDetail(view, issue_id) :
     issue.issueDetail(view, projectID, issue_id, session)
-    
+
+# 프로젝트 생성으로 이동
+def issue_static(view) :
+    static.issueStaticView(view, projectID, title, session)
+
 # 이슈 검색
 def search(view, search_entry) :
     global  issues
@@ -206,6 +211,10 @@ def issuelistView(view):
     project_name_label = tk.Label(title_frame, text=f"/{title}", font=("Helvetica", 16))
     project_name_label.grid(row=0, column=1, padx=2, pady=10, sticky="w")
     project_name_label.bind("<Button-1>", project_detail)
+
+    # 통계 버튼
+    logout_button = tk.Button(title_frame, text="static", command=lambda: issue_static(view))
+    logout_button.grid(row=0, column=3, pady=5, sticky="w")
 
     button_frame = tk.Frame(view)
     button_frame.grid(row=0, column=1, padx=10, pady=5, sticky="e")

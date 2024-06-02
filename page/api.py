@@ -176,7 +176,8 @@ def edit_issue(projectId, issueId, edit, session) :
     except req.exceptions.RequestException as e:
         print(f'An error occurred while updating project: {e}')
         return False
-    
+
+# dev 추천 
 def recommend(projectId, issueId, session) :
     try:
         res = session.get(url + f"projects/{projectId}/issues/{issueId}/assignee-suggestions")
@@ -196,6 +197,20 @@ def comment_issue(projectId, issueId, comment, session) :
             return True
         else:
             return False
+    except req.exceptions.RequestException as e:
+        print(f'An error occurred: {e}')
+        return False
+    
+# 통계 정보 가져오기
+def get_static(projectId, session) :
+    category = ["new-issue", "closed-issue", "best-issue", "best-member"]
+    try:
+        static = {}
+        for cat in category :
+            res = session.get(url + f"projects/{projectId}/trend?category={cat}")
+            if res.status_code != 200: print(res.status_code)
+            static[cat] = res.json()
+        return static
     except req.exceptions.RequestException as e:
         print(f'An error occurred: {e}')
         return False
