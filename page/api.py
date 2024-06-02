@@ -176,3 +176,26 @@ def edit_issue(projectId, issueId, edit, session) :
     except req.exceptions.RequestException as e:
         print(f'An error occurred while updating project: {e}')
         return False
+    
+def recommend(projectId, issueId, session) :
+    try:
+        res = session.get(url + f"projects/{projectId}/issues/{issueId}/assignee-suggestions")
+        if res.status_code == 200:
+            return res.json()["username"]
+        else:
+            return "No recommended Dev"
+    except req.exceptions.RequestException as e:
+        print(f'An error occurred: {e}')
+        return False
+    
+# 댓글 작성
+def comment_issue(projectId, issueId, comment, session) : 
+    try:
+        res = session.post(url + f"projects/{projectId}/issues/{issueId}/comments", json=comment)
+        if res.status_code == 201:
+            return True
+        else:
+            return False
+    except req.exceptions.RequestException as e:
+        print(f'An error occurred: {e}')
+        return False

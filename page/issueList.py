@@ -64,6 +64,9 @@ def getIssueData() :
 
     isTester, data = api.getIssueData(session, projectID)
 
+    member_pl = []
+    member_dev = []
+    member_tester = []
     title = data["title"]
     description = data["description"]
     issues = data["issue"]
