@@ -18,6 +18,8 @@ project_description = ""
 description_edit = False 
 origin_user = []
 session = ""
+username_entry = ""
+role_combobox = ""
 
 # get
 def project_data(id) :
@@ -78,7 +80,7 @@ def projectEdit(view, id, session_get) :
 def check_user(username) :
     return api.check_user(username, session)
 
-def add_user(username_entry, role_combobox):
+def add_user():
     username = username_entry.get()
     role = role_combobox.get()
     if username and role:
@@ -86,7 +88,7 @@ def add_user(username_entry, role_combobox):
             if(user["username"] == username) : 
                 messagebox.showerror("Error", "이미 프로젝트에 등록된 유저입니다")
                 return 
-        for user in new_user.values() :
+        for user in list(new_user.values()) :
             if(user["username"] == username) : 
                 messagebox.showerror("Error", "이미 프로젝트에 등록된 유저입니다")
                 return
@@ -95,6 +97,8 @@ def add_user(username_entry, role_combobox):
             user_id = user_table.insert('', tk.END, values=(username, role))
             new_user[user_id] = {'username' : username, 'role' : role_key[role]}
             add_delete_button(user_id)
+            
+            # 초기화
             username_entry.delete(0, tk.END)
             role_combobox.set('')
         else :
@@ -145,6 +149,8 @@ def logout(view) :
 
 def projectEditView(view) :
     global user_table
+    global username_entry 
+    global role_combobox 
 
     for widget in view.winfo_children():
         widget.destroy()
@@ -211,21 +217,21 @@ def projectEditView(view) :
     role_combobox = ttk.Combobox(add_user_frame, values=roles)
     role_combobox.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
 
-    add_button = ttk.Button(add_user_frame, text="Add", command=lambda:add_user(username_entry, role_combobox))
+    add_button = ttk.Button(add_user_frame, text="Add", command=add_user)
     add_button.grid(row=0, column=4, padx=5, pady=5)
 
     # User Table
     columns = ("username", "role", "action")
-    user_table = ttk.Treeview(add_user_frame, columns=columns, show='headings')
+    user_table = ttk.Treeview(view, columns=columns, height= 7, show='headings')
     user_table.heading("username", text="user name")
     user_table.heading("role", text="role")
     user_table.heading("action", text="action")
-    user_table.grid(row=1, column=0, columnspan=5, padx=5, pady=5, sticky='nsew')
+    user_table.grid(row=2, column=0, columnspan=5, pady=15, padx=20, sticky='nsew')
 
     # Sample data
     for user in origin_user:
         user_table.insert('', tk.END, values=(user["username"], roles[user["role"]], ""))  # 기본 데이터에는 삭제 버튼을 추가하지 않음
-    user_table.bind('<Button-1>', lambda event: delete_user(event))
+    user_table.bind('<Button-1>', delete_user)
 
     # Grid configuration
     add_user_frame.grid_columnconfigure(1, weight=1)

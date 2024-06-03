@@ -42,7 +42,7 @@ def add_user(username_entry, role_combobox):
     username = username_entry.get()
     role = role_combobox.get()
     if username and role:
-        for user in new_user.values() :
+        for user in list(new_user.values()) :
             if(user["username"] == username) : 
                 messagebox.showerror("Error", "이미 프로젝트에 등록된 유저입니다")
                 return
@@ -155,11 +155,11 @@ def projectcreateView(view, get_session) :
 
     # User Table
     columns = ("username", "role", "action")
-    user_table = ttk.Treeview(add_user_frame, columns=columns, show='headings')
+    user_table = ttk.Treeview(view, columns=columns, height= 7, show='headings')
     user_table.heading("username", text="user name")
     user_table.heading("role", text="role")
     user_table.heading("action", text="action")
-    user_table.grid(row=1, column=0, columnspan=5, padx=5, pady=5, sticky='nsew')
+    user_table.grid(row=2, column=0, columnspan=5, pady=15, padx=20, sticky='nsew')
     user_table.bind('<Button-1>', lambda event: delete_user(event))
 
     # Grid configuration
