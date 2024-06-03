@@ -25,12 +25,10 @@ buttons = [
 
 # 로그아웃    
 def logout(view):
-    print("logout")
     api.logout(session)
     login.loginView(view, session)
 
 def back(view):
-    print("back")
     issuelist.issuelist(view, projectId, session)
 
 # Function to show the appropriate frame
@@ -45,7 +43,6 @@ def on_listbox_select(view, event, listbox):
     
 def get_static() :
     global static
-    print(static)
     static = api.get_static(projectId, session)
 
 def issueStaticView(view, projectID, projectTitle, session_get) :
@@ -129,8 +126,11 @@ def issueStaticView(view, projectID, projectTitle, session_get) :
 
                 frames[cat][user] = frame
                 listbox = tk.Listbox(frame, font=("Arial", 10), width=45, height=15)
-                static_data = static[cat]["weekly"]["data"][user] 
-                listbox.insert(tk.END, f"사용자 {static_data['username']}, {user}로 등록된 issue 개수 {static_data['count']}개")
+                try :
+                    static_data = static[cat]["weekly"]["data"][user] 
+                    listbox.insert(tk.END, f"사용자 {static_data['username']}, {user}로 등록된 issue 개수 {static_data['count']}개")
+                except (KeyError) :
+                    listbox.insert(tk.END, f"no {user}")
                 listbox.grid(row=1, column=0, sticky='nsew')
                 frame.grid_rowconfigure(0, weight=1)
                 frame.grid_columnconfigure(0, weight=1)
@@ -148,7 +148,7 @@ def issueStaticView(view, projectID, projectTitle, session_get) :
                     temp = f"제목 : {static_data['title']} , comment 개수 {static_data['count']}"
                     listbox.insert(tk.END, temp)
                     page_move[temp] = static_data["issueId"]
-                listbox.bind("<<ListboxSelect>>", lambda event : on_listbox_select(view, event, listbox))
+                listbox.bind("<<ListboxSelect>>", lambda event, listbox=listbox : on_listbox_select(view, event, listbox))
                 listbox.grid(row=1, column=0, sticky='nsew')
                 frame.grid_rowconfigure(0, weight=1)
                 frame.grid_columnconfigure(0, weight=1)

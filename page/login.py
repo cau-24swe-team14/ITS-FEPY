@@ -14,6 +14,8 @@ def login(view, entry_username, entry_password, session):
     username = entry_username.get()
     password = entry_password.get()
 
+    if(username == "" or password == "") :
+        return
     # 서버에서 확인
     if loginCheck(username, password, session):  # Example credentials
         projectlist.projectlist(view, session)

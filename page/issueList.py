@@ -100,12 +100,14 @@ def search(view, search_entry) :
     global issuesFilter
 
     context = search_entry.get()
-    issues = api.search(projectID, context, search_filter, session)
-
-    if(issues==None) :issues = []
-    max_page = np.ceil(len(issues)/page_size)
-    issuesFilter = issues
-    change_page(view, 1)
+    if(context!="") :
+        issues = api.search(projectID, context, search_filter, session)
+        if(issues==None) :issues = []
+        max_page = np.ceil(len(issues)/page_size)
+        issuesFilter = issues
+        change_page(view, 1)
+    else :
+        issuelist(view, projectID, session)
 
 # 프로젝트 행 클릭
 def table_click(view, event, tree) :

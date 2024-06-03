@@ -1,6 +1,6 @@
 import requests as req
 
-url = "http://13.125.149.255:8080/"
+url = "http://43.201.64.55:8080/"#"http://127.0.0.1:8080/"
 username = ""
 
 # 회원 가입

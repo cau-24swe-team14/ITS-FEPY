@@ -14,6 +14,9 @@ def signup(id, password, session) :
 def register(view, entry_username, entry_password, entry_confirm_password, session):
     username = entry_username.get()
     password = entry_password.get()
+    if(username == "" or password == "") :
+        messagebox.showinfo("Registration", "아이디/패스워드를 입력하세요")
+        return
     confirm_password = entry_confirm_password.get()
     if password == confirm_password:
         if(signup(username, password, session)) :

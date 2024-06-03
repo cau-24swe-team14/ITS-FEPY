@@ -80,7 +80,6 @@ def logout(view) :
 def back(view) :
     projectlist.projectlist(view, session)
 
-
 def projectcreateView(view, get_session) :
     global user_table
     global new_user

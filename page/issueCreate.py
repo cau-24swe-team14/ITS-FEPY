@@ -58,9 +58,14 @@ def keyword_change(event, keyword_combo) :
 def create_issueView(view, project_id, session_get) :
     global session
     global projectId
+    global keyword
+    global priority
 
     session = session_get
     projectId = project_id
+
+    keyword = IssueKeyword[0]
+    priority = IssuePriority[0]
 
     for widget in view.winfo_children():
         widget.destroy()
